@@ -6,7 +6,7 @@ Dottamine is a low quality image feature detector. It works by binning the image
 
 Dottamine can work with several image types. It can work from 2D images up to 4D images.
 
-Just download [dottamine](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/P8UXaE/light_sheet_domes/tree/main/binner).
+Just download [dottamine](https://minhaskamal.github.io/DownGit/#/home?url=https://github.com/P8UXaE/dottamine).
 
 
 ## Instalation
