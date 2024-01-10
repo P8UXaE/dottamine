@@ -84,12 +84,19 @@ class dotim():
             raise ValueError("Dimensions shoudl not exceed 4 (t, z, y, x)")
         
         self.sDim = self.nDim
+        
         if self.nDim == 3 and is2D == True: # If image is 2D and it has 3 dimensions, it means that there is time dimension
             self.time_dim = True
             self.sDim -= 1
-        elif self.nDim == 4 and is2D == False: # If image is 3D and there are 3 dimensions, it means there is time
+        elif self.nDim == 4 and is2D == False: # If image is 3D and there are 4 dimensions, it means there is time
             self.time_dim = True
             self.sDim -= 1
+        
+        if self.time_dim == True:
+            self.working_image_shape = self.im.shape[1:]
+        else:
+            self.working_image_shape = self.im.shape
+        
         
         
         
@@ -614,6 +621,8 @@ class dotim():
                         mask[j] = 1
                 mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, np.ones((morph_close_k, morph_close_k))) 
                 mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, np.ones((morph_open_k, morph_open_k)))
+
+                mask = np.resize(mask, self.working_image_shape)
             
             
         if self.sDim == 2 and self.time_dim is True: ### CASE 2 SPACE DIMS AND 1 TIME DIMS
@@ -634,9 +643,11 @@ class dotim():
                             mask_i[k] = 1
                     mask_i = cv2.morphologyEx(mask_i, cv2.MORPH_CLOSE, np.ones((morph_close_k, morph_close_k))) 
                     mask_i = cv2.morphologyEx(mask_i, cv2.MORPH_OPEN, np.ones((morph_open_k, morph_open_k)))
-        
+
+                mask_i = np.resize(mask_i, self.working_image_shape)
+
                 mask.append(mask_i)
-        
+
         
         if self.sDim == 3 and self.time_dim is False and self.treat_3D_as_2D is False: ### CASE 3 SPACE DIMS AND 0 TIME DIMS AND TREAT 3D
             coords = self.get_coords(self.dotted_image)
@@ -654,6 +665,8 @@ class dotim():
                         
                 mask = sk.morphology.binary_closing(mask, footprint=sk.morphology.ball(m_ball))
                 mask = sk.morphology.binary_opening(mask, footprint=sk.morphology.ball(m_ball))
+
+                mask = np.resize(mask, self.working_image_shape)
             
             
         if self.sDim == 3 and self.time_dim is False and self.treat_3D_as_2D is True: ### CASE 3 SPACE DIMS AND 0 TIME DIMS AND TREAT 2D
@@ -676,6 +689,8 @@ class dotim():
                     mask_i = cv2.morphologyEx(mask_i, cv2.MORPH_OPEN, np.ones((morph_open_k, morph_open_k)))
                 
                 mask.append(mask_i)
+
+                mask = np.resize(mask, self.working_image_shape)
             
             
         if self.sDim == 3 and self.time_dim is True and self.treat_3D_as_2D is False: ### CASE 3 SPACE DIMS AND 1 TIME DIMS AND TREAT 3D
@@ -698,6 +713,8 @@ class dotim():
                     mask_i = sk.morphology.binary_opening(mask_i, footprint=sk.morphology.ball(m_ball))
                     
             mask.append(mask_i)
+
+            mask = np.resize(mask, self.working_image_shape)
         
         
         if self.sDim == 3 and self.time_dim is True and self.treat_3D_as_2D is True: ### CASE 3 SPACE DIMS AND 1 TIME DIMS AND TREAT 2D
@@ -722,12 +739,10 @@ class dotim():
                         
                     mask_i.append(mask_j)
 
+                mask_i = np.resize(mask_i, self.working_image_shape)
+
                 mask.append(np.array(mask_i))
         
         self.mask = np.array(mask)
 
         return self.mask
-
-
-
-    
