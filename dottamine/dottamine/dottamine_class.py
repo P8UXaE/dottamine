@@ -690,7 +690,7 @@ class dotim():
                 
                 mask.append(mask_i)
 
-                mask = np.resize(mask, self.working_image_shape)
+            mask = np.resize(mask, self.working_image_shape)
             
             
         if self.sDim == 3 and self.time_dim is True and self.treat_3D_as_2D is False: ### CASE 3 SPACE DIMS AND 1 TIME DIMS AND TREAT 3D
@@ -711,10 +711,11 @@ class dotim():
                             
                     mask_i = sk.morphology.binary_closing(mask_i, footprint=sk.morphology.ball(m_ball))
                     mask_i = sk.morphology.binary_opening(mask_i, footprint=sk.morphology.ball(m_ball))
+
+                    mask_i = np.resize(mask_i, self.working_image_shape)
                     
             mask.append(mask_i)
-
-            mask = np.resize(mask, self.working_image_shape)
+            
         
         
         if self.sDim == 3 and self.time_dim is True and self.treat_3D_as_2D is True: ### CASE 3 SPACE DIMS AND 1 TIME DIMS AND TREAT 2D
@@ -741,8 +742,12 @@ class dotim():
 
                 mask_i = np.resize(mask_i, self.working_image_shape)
 
-                mask.append(np.array(mask_i))
+                mask.append(mask_i)
         
         self.mask = np.array(mask)
 
         return self.mask
+
+
+
+    
